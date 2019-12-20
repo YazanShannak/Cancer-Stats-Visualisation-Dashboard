@@ -34,7 +34,7 @@ main_header = html.H1('Cancer in United States and the Gulf', className='heading
 main_description = html.P(
     'This dashboard aims to provide visual insights of the state of cancer in the US and the gulf along the years, '
     'in addition to the economic and well-being factors of the population to correlate between the two',
-    className='my-3')
+    className='my-3 font-italic')
 main_intro = bootstrap.Container(children=[main_header, main_description])
 # ------------------------------------- Main content end --------------------------------------------#
 
@@ -64,7 +64,7 @@ overall_incidence_graph = plots.get('incidence').scatter_all_countries('Year', '
                                                                            'title': 'Incidence Rate (deaths per 100,000)'})
 overall_intro = bootstrap.Container(children=[html.H3('Features along the years'), html.P(
     'The following graphs represents the collected features data along the years from about 1990 to 2018')],
-                                    className='my-3')
+                                    className='my-3 font-italic')
 
 overall_features_wrapper = html.Div(
     children=[overall_intro, overall_hdi_graph, overall_mortality_graph, overall_gdp_graph, overall_incidence_graph],
@@ -80,7 +80,11 @@ feature_country_dd = dcc.Dropdown(id='feature_country_dd', options=countries_opt
                                   value='', className='my-2')
 feature_country_graph = dcc.Graph(id='feature_country_graph')
 feature_per_country_wrapper = bootstrap.Container(
-    children=[feature_country_dd, feature_country_checklist, feature_country_graph],
+    children=[html.H3('Features per Country'), html.P(
+        "You can choose a country and check the features you would like to compare, please note all features values' are standard scaled",
+        className='font-italic'),
+              feature_country_dd, feature_country_checklist,
+              feature_country_graph],
     className='my-4')
 
 # ------------------------------------- Features per country end --------------------------------------------#
