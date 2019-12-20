@@ -98,10 +98,13 @@ for country in hdi_vs_gdp_data['Country'].unique():
     hdi_vs_gdp_scatters.append(
         go.Scatter(x=country_data['HDI'], y=country_data['GDP per capita'], mode='markers', text=country_data['Year'],
                    marker_color=countries_colors.get(country), name=country))
+hdi_vs_gdp_figure = dict(data=hdi_vs_gdp_scatters,
+                         layout=dict(title='HDI vs GDP', xaxis=dict(title='HDI'), yaxis=dict(title='GDP per capita'),
+                                     showlegend=True))
 
 hdi_vs_gdp_wrapper = bootstrap.Container(children=[html.H3('HDI vs GDP'), html.P(
     'A plot of GDP per capita vs HDI for each country to determine correaltion between then two',
-    className='font-italic'), dcc.Graph(figure={'data': hdi_vs_gdp_scatters})])
+    className='font-italic'), dcc.Graph(figure=hdi_vs_gdp_figure)])
 
 # ------------------------------------- HDI vs GDP end --------------------------------------------#
 
@@ -114,7 +117,6 @@ app.layout = main
 
 
 # ------------------------------------- app configuration end --------------------------------------------#
-
 
 # ------------------------------------- app callbacks start --------------------------------------------#
 ## feature per country
