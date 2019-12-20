@@ -7,6 +7,7 @@ from src.plot import Plot
 from plotly import graph_objects as go
 import os
 from sklearn.preprocessing import scale
+import pandas as pd
 
 # ------------------------------------- Data Init start --------------------------------------------#
 data_dir = os.path.join(os.path.curdir, 'data')
@@ -14,7 +15,8 @@ data = {
     'hdi': os.path.join(data_dir, 'hdi.xlsx'),
     'gdp': os.path.join(data_dir, 'gdp.xlsx'),
     'mortality': os.path.join(data_dir, 'mortality_rates.xlsx'),
-    'incidence': os.path.join(data_dir, 'incidence_rates.xlsx')
+    'incidence': os.path.join(data_dir, 'incidence_rates.xlsx'),
+    'hdi_vs_gdp': os.path.join(data_dir, 'hdi_vs_gdp.xlsx')
 }
 
 target_columns = {'hdi': 'HDI', 'incidence': 'Incidence Rate', 'mortality': 'Mortality Rate', 'gdp': 'GDP per capita'}
@@ -26,7 +28,7 @@ countries_options = [{'label': 'Oman', 'value': 'Oman'}, {'label': 'Saudi Arabia
                      {'label': 'United Arab Emirates', 'value': 'United Arab Emirates'},
                      {'label': 'Bahrain', 'value': 'Bahrain'}, {'label': 'Kuwait', 'value': 'Kuwait'},
                      {'label': 'Qatar', 'value': 'Qatar'}, {'label': 'United States', 'value': 'United States'}]
-
+countries_colors = plots.get('hdi').country_color
 # ------------------------------------- Data Init end --------------------------------------------#
 
 # ------------------------------------- Main content start --------------------------------------------#
@@ -63,8 +65,8 @@ overall_incidence_graph = plots.get('incidence').scatter_all_countries('Year', '
                                                                        yaxis={
                                                                            'title': 'Incidence Rate (deaths per 100,000)'})
 overall_intro = bootstrap.Container(children=[html.H3('Features along the years'), html.P(
-    'The following graphs represents the collected features data along the years from about 1990 to 2018')],
-                                    className='my-3 font-italic')
+    'The following graphs represents the collected features data along the years from about 1990 to 2018',
+    className='font-italic')], className='my-3')
 
 overall_features_wrapper = html.Div(
     children=[overall_intro, overall_hdi_graph, overall_mortality_graph, overall_gdp_graph, overall_incidence_graph],
@@ -88,12 +90,26 @@ feature_per_country_wrapper = bootstrap.Container(
     className='my-4')
 
 # ------------------------------------- Features per country end --------------------------------------------#
+# ------------------------------------- HDI vs GDP start --------------------------------------------#
+hdi_vs_gdp_data = pd.read_excel(data.get('hdi_vs_gdp'))
+hdi_vs_gdp_scatters = []
+for country in hdi_vs_gdp_data['Country'].unique():
+    country_data = hdi_vs_gdp_data[hdi_vs_gdp_data['Country'] == country]
+    hdi_vs_gdp_scatters.append(
+        go.Scatter(x=country_data['HDI'], y=country_data['GDP per capita'], mode='markers', text=country_data['Year'],
+                   marker_color=countries_colors.get(country), name=country))
 
+hdi_vs_gdp_wrapper = bootstrap.Container(children=[html.H3('HDI vs GDP'), html.P(
+    'A plot of GDP per capita vs HDI for each country to determine correaltion between then two',
+    className='font-italic'), dcc.Graph(figure={'data': hdi_vs_gdp_scatters})])
+
+# ------------------------------------- HDI vs GDP end --------------------------------------------#
 
 # ------------------------------------- app configuration start --------------------------------------------#
 app = dash.Dash(external_stylesheets=[bootstrap.themes.BOOTSTRAP])
 app.title = 'Cancer Statistics'
-main = html.Div(children=[main_intro, overall_features_wrapper, feature_per_country_wrapper], className='my-4')
+main = html.Div(children=[main_intro, overall_features_wrapper, feature_per_country_wrapper, hdi_vs_gdp_wrapper],
+                className='my-4')
 app.layout = main
 
 
