@@ -118,6 +118,7 @@ def feature_country_callback(selected_features, selected_country):
 
 # ------------------------------------- app callbacks end --------------------------------------------#
 
+server = app.server
 
 if __name__ == '__main__':
     app.run_server(host='0.0.0.0', port=5000)
